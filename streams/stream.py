@@ -11,7 +11,7 @@ from __future__ import division
 
 from collections import Iterable, Sized, deque
 from heapq import nlargest, nsmallest, heappush, heappop
-from itertools import chain, islice, repeat
+from itertools import chain, islice, repeat, zip_longest
 from operator import add, truediv
 from re import compile as regex_compile
 
@@ -578,6 +578,17 @@ class Stream(Iterable, Sized):
         if not mapper:
             mapper = imap
         return self.__class__(mapper(predicate, self))
+
+    def group_by_chunk(self, n, fillvalue=None):
+        iterable = self
+        def grouper():
+            args = [iter(iterable)] * n
+            for i in zip_longest(fillvalue=fillvalue, *args):
+                if tuple(i)[-1] == fillvalue:
+                    yield tuple(v for v in i if v != fillvalue)
+                else:
+                    yield i
+        return self.__class__(grouper())
 
     def _kv_map(self, mapper, predicate, **concurrency_kwargs):
         """
