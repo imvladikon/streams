@@ -115,10 +115,11 @@ class ExecutorPool(object):
         with self.lock:
             min_available, suspected_workers = None, None
             for availability, workers in iteritems(self.workers):
-                if availability >= required_workers:
-                    if min_available is None or min_available < availability:
-                        min_available = availability
-                        suspected_workers = workers
+                if availability >= required_workers and (
+                    min_available is None or min_available < availability
+                ):
+                    min_available = availability
+                    suspected_workers = workers
             if min_available is not None:
                 return suspected_workers.pop(), min_available
             return None, 0

@@ -152,11 +152,9 @@ class Stream(Iterable, Sized):
         cache = self._cache
         iterator = self.iterator
         if cache is None:
-            for item in iterator:
-                yield item
+            yield from iterator
         else:
-            for item in cache:
-                yield item
+            yield from cache
             for item in iterator:
                 cache.append(item)
                 yield item
